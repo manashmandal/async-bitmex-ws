@@ -2,9 +2,10 @@ import time
 import urllib
 import hashlib
 import hmac
+import websockets
 
 
-class BitMEXAuth:
+class BitMEXWS:
     def __init__(
         self,
         apiKey: str,
@@ -69,17 +70,26 @@ class BitMEXAuth:
 
     # Get auth for python websockets
     def get_url_auth(self):
+
         nonce = self.__generate_nonce()
         expires = nonce
         signature = self.__generate_signature(nonce)
         apiKey = self.apiKey
 
         return (
-            self.generated_url,
+            self.__get_url(),
             [
                 ("api-expires", expires),
                 ("api-signature", signature),
                 ("api-key", apiKey),
             ],
         )
+
+    async def connect(self):
+        url, headers = self.get_url_auth()
+
+        async with websockets.connect(url, extra_headers=headers) as ws:
+            while True:
+                data = await ws.recv()
+                print(data)
 
