@@ -16,13 +16,15 @@ ws = BitMEXWS(apiKey=apiKey, secret=apiSecret, testnet=True)
 
 
 async def printHello(sio):
+    print("printHello")
     # await sio.connect("http://localhost:4000")
     # print("hello")
     # try:
     while ws.state() == State.OPEN:
         # await asyncio.sleep(5)
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
 
+        # ws.positions()
         print(time.time(), ws.positions())
         # print(ws.data)
         # await sio.emit(

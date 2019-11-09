@@ -117,7 +117,7 @@ class BitMEXWS:
         # await asyncio.sleep(1)
         async for message in self.ws:
             # self.data = message
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
             self.__on_message(message)
 
             # self.logger.debug(f"position {time.time()}")
