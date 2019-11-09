@@ -2,6 +2,7 @@ appdirs==1.4.3
 attrs==19.3.0
 black==19.10b0
 Click==7.0
+loguru==0.3.2
 pathspec==0.6.0
 python-engineio==3.10.0
 python-socketio==4.3.1

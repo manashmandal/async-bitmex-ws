@@ -7,6 +7,9 @@ from websockets.protocol import State
 import asyncio
 import json
 import math
+from loguru import logger
+import ccxt
+
 
 def find_by_keys(keys, table, matchData):
     for item in table:
@@ -37,6 +40,7 @@ class BitMEXWS:
         self.testnet = testnet
         self.apiKey = apiKey
         self.secret = secret
+        self.logger = logger
 
         if not subscriptions:
             self.symbol_subs = ["instrument", "order", "position"]
@@ -52,6 +56,7 @@ class BitMEXWS:
         self.data = {}
         self.keys = {}
         self.MAX_TABLE_LEN = 50
+        self.bitmex = ccxt.bitmex()
 
     def __generate_nonce(self):
         return str(int(round(time.time()) + self.timeout))
@@ -130,18 +135,35 @@ class BitMEXWS:
 
     # Fetch required data
     def get_instrument(self):
-        '''Get the raw instrument data for this symbol.'''
+        """Get the raw instrument data for this symbol."""
         # Turn the 'tickSize' into 'tickLog' for use in rounding
-        instrument = self.data['instrument'][0]
-        instrument['tickLog'] = int(math.fabs(math.log10(instrument['tickSize'])))
-        return instrument
+        try:
+            instrument = self.data["instrument"][0]
+            instrument["tickLog"] = int(math.fabs(math.log10(instrument["tickSize"])))
+            return instrument
+        except:
+            return {}
 
-    
     def funds(self):
-        '''Get your margin details.'''
-        return self.data['margin'][0]
+        """Get your margin details."""
+        try:
+            margin = self.data["margin"][0]
+            return margin
+        except:
+            return {}
 
-    
+    def open_orders(self):
+        if self.data["order"] is not None:
+            return [
+                self.bitmex.parse_order(o, market={"symbol": "BTC/USD"})
+                for o in self.data["order"]
+                if o != None
+            ]
+        return []
+
+
+    def positions(self):
+        return self.data["position"]
 
     def __on_message(self, message):
         """Handler for parsing WS messages."""
@@ -200,5 +222,4 @@ class BitMEXWS:
                     raise Exception("Unknown action: %s" % action)
         except Exception as exe:
             # self.logger.error(traceback.format_exc())
-            print(str(exe), exe.__class__.__name__)
-
+            self.logger.error(str(exe), exe.__class__.__name__)

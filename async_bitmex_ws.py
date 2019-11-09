@@ -16,7 +16,14 @@ async def printHello():
     # try:
     while ws.state() == State.OPEN:
         await asyncio.sleep(1)
-        print(ws.data)
+        # print(ws.data)
+
+        # print("instrument data", ws.get_instrument())
+        # print(ws.funds())
+        # print(ws.open_orders())
+        # print(ws.positions())
+        # print(ws.funds())
+        # print("funds", ws.funds())
 
     await ws.close()
 
@@ -26,10 +33,11 @@ async def printHello():
 
 async def run():
     await ws.connect()
-    try:
-        await asyncio.gather(ws.receive_message(), printHello())
-    except Exception as exe:
-        print(str(exe), exe.__class__.__name__)
+    # try:
+    await asyncio.gather(ws.receive_message(), printHello())
+
+    # except Exception as exe:
+    #     print(str(exe), exe.__class__.__name__)
 
     # print("hol up")
     # await ws.connect()
