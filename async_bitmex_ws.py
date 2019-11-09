@@ -5,6 +5,7 @@ import asyncio
 import json
 from websockets.protocol import State
 import datetime
+import time
 
 # sio = socketio.AsyncClient()
 
@@ -19,9 +20,10 @@ async def printHello(sio):
     # print("hello")
     # try:
     while ws.state() == State.OPEN:
-        await asyncio.sleep(5)
+        # await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
-        print(ws.positions())
+        print(time.time(), ws.positions())
         # print(ws.data)
         # await sio.emit(
         #     "positionEvent",
@@ -44,8 +46,8 @@ async def printHello(sio):
 async def run_bitmex():
     await ws.connect()
     # try:
-    # await asyncio.gather(ws.receive_message(), printHello(sio))
-    await ws.receive_message()
+    await asyncio.gather(ws.receive_message(), printHello(None))
+    # await ws.receive_message()
 
     # except Exception as exe:
     #     print(str(exe), exe.__class__.__name__)

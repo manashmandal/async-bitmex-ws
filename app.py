@@ -29,6 +29,10 @@ async def start_socket(request):
     # await sio.connect("http://localhost:4000")
     p = Process(target=run, args=(sio,))
     p.start()
+
+    # Wait for the thread to join
+    await asyncio.sleep(3)
+
     return response.json({"pid": p.pid})
 
 
