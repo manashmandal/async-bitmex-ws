@@ -16,7 +16,7 @@ ws = BitMEXWS(apiKey=apiKey, secret=apiSecret, testnet=True)
 
 
 async def printHello(sio):
-    print("printHello")
+    # print("printHello")
     # await sio.connect("http://localhost:4000")
     # print("hello")
     # try:
@@ -25,12 +25,12 @@ async def printHello(sio):
         await asyncio.sleep(0.1)
 
         # ws.positions()
-        print(time.time(), ws.positions())
+        # print(time.time(), ws.positions())
         # print(ws.data)
-        # await sio.emit(
-        #     "positionEvent",
-        #     {"time": str(datetime.datetime.now()), "data": ws.positions()},
-        # )
+        await sio.emit(
+            "positionEvent",
+            {"time": str(datetime.datetime.now()), "data": ws.positions()},
+        )
 
         # print("instrument data", ws.get_instrument())
         # print(ws.funds())
@@ -45,10 +45,10 @@ async def printHello(sio):
     #     await ws.close()
 
 
-async def run_bitmex():
+async def run_bitmex(sio):
     await ws.connect()
     # try:
-    await asyncio.gather(ws.receive_message(), printHello(None))
+    await asyncio.gather(ws.receive_message(), printHello(sio))
     # await ws.receive_message()
 
     # except Exception as exe:

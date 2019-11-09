@@ -12,6 +12,16 @@ app = Sanic()
 p = Process()
 sio = socketio.AsyncClient()
 
+
+async def connect_socketio():
+    if not sio.connected:
+        await sio.connect("http://localhost:4000")
+
+
+# async def disconnect_socketio():
+#     await sio.disconnect()
+
+
 # loop = asyncio.get_event_loop()
 
 
@@ -32,16 +42,30 @@ async def index(request):
     return response.json({"hey": "asd"})
 
 
+@app.route("/socket", methods=["GET"])
+async def connect_socket(request):
+    socketio_task = asyncio.create_task(connect_socketio())
+    return response.json({"connected": "ok", "name": str(socketio_task)})
+
+
 @app.route("/start-socket", methods=["GET"])
 async def start_socket(request):
-    # await sio.connect("http://localhost:4000")
-    # p = Process(target=run, args=(sio,))
-    # p.start()
-    # p.join()
-    task = asyncio.create_task(run_bitmex())  # , loop=asyncio.get_event_loop())
-    # Wait for the thread to join
-    # await asyncio.sleep(3)
-    print(task)
+
+    try:
+        no_print_hello = True
+        for task in asyncio.all_tasks():
+            if "printHello" in str(task):
+                no_print_hello = False
+
+        if no_print_hello == True:
+            # asyncio.create_task(connect_socketio())
+            # await sio.connect("http://localhost:4000")
+            socketio_task = asyncio.create_task(connect_socketio())
+            task = asyncio.create_task(run_bitmex(sio=sio))  # ,
+            print(task)
+            print(socketio_task)
+    except Exception as exe:
+        print(exe)
 
     # return response.json({"pid": p.pid})
     return response.json({"hey": "ya"})
@@ -49,11 +73,15 @@ async def start_socket(request):
 
 @app.route("/stop-socket", methods=["GET"])
 async def stop_socket(request):
-
-    print(asyncio.all_tasks())
+    # await sio.disconnect()
+    # print(asyncio.all_tasks())
+    # asyncio.create_task(disconnect_socketio())
+    # await sio.disconnect()
     for task in asyncio.all_tasks():
-        if "printHello" in str(task):
+        if "run_bitmex" in str(task) or "connect_socketio" in str(task):
             task.cancel()
+            await asyncio.sleep(1)
+            print(f"TASK CANCELED {task.cancelled()}")
             # print(task)
 
     return response.json({"hey": "lo"})
