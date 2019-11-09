@@ -110,12 +110,20 @@ class BitMEXWS:
         )
 
     async def receive_message(self):
-        await asyncio.sleep(1)
+        # while True:
+        #     await asyncio.sleep(3)
+        #     msg = await self.ws.recv()
+        #     # self.logger.debug(msg)
+        # await asyncio.sleep(1)
         async for message in self.ws:
             # self.data = message
+            await asyncio.sleep(1)
             self.__on_message(message)
-            # print("message")
-            # await asyncio.sleep(1)
+
+            # self.logger.debug(f"position {time.time()}")
+            # self.logger.debug(self.positions())
+        # print("message")
+        # await asyncio.sleep(1)
 
     async def connect(self):
         url, headers = self.get_url_auth()
@@ -153,17 +161,23 @@ class BitMEXWS:
             return {}
 
     def open_orders(self):
-        if self.data["order"] is not None:
-            return [
-                self.bitmex.parse_order(o, market={"symbol": "BTC/USD"})
-                for o in self.data["order"]
-                if o != None
-            ]
+        try:
+            if self.data["order"] is not None:
+                return [
+                    self.bitmex.parse_order(o, market={"symbol": "BTC/USD"})
+                    for o in self.data["order"]
+                    if o != None
+                ]
+        except:
+            return []
         return []
 
-
     def positions(self):
-        return self.data["position"]
+        try:
+            position = self.data["position"]
+            return position
+        except:
+            return []
 
     def __on_message(self, message):
         """Handler for parsing WS messages."""

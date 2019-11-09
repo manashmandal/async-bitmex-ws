@@ -4,6 +4,9 @@ from auth_util import BitMEXWS
 import asyncio
 import json
 from websockets.protocol import State
+import datetime
+
+# sio = socketio.AsyncClient()
 
 apiKey = "F061zxLTOGYyPMlwq-EU4YaW"
 apiSecret = "uIOiJzEhhHK5oiC3v1M6nYskIlFKAdtg_Jc966EUsO7TqQPy"
@@ -11,12 +14,19 @@ apiSecret = "uIOiJzEhhHK5oiC3v1M6nYskIlFKAdtg_Jc966EUsO7TqQPy"
 ws = BitMEXWS(apiKey=apiKey, secret=apiSecret, testnet=True)
 
 
-async def printHello():
+async def printHello(sio):
+    # await sio.connect("http://localhost:4000")
     # print("hello")
     # try:
     while ws.state() == State.OPEN:
-        await asyncio.sleep(1)
+        await asyncio.sleep(5)
+
+        print(ws.positions())
         # print(ws.data)
+        # await sio.emit(
+        #     "positionEvent",
+        #     {"time": str(datetime.datetime.now()), "data": ws.positions()},
+        # )
 
         # print("instrument data", ws.get_instrument())
         # print(ws.funds())
@@ -31,10 +41,11 @@ async def printHello():
     #     await ws.close()
 
 
-async def run():
+async def run_bitmex():
     await ws.connect()
     # try:
-    await asyncio.gather(ws.receive_message(), printHello())
+    # await asyncio.gather(ws.receive_message(), printHello(sio))
+    await ws.receive_message()
 
     # except Exception as exe:
     #     print(str(exe), exe.__class__.__name__)
@@ -47,4 +58,4 @@ async def run():
 
 
 # asyncio.get_event_loop().run_until_complete(ws.connect())
-asyncio.get_event_loop().run_until_complete(run())
+# asyncio.get_event_loop().run_until_complete(run_bitmex(None))
