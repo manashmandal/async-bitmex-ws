@@ -32,6 +32,7 @@ async def printHello(sio):
             {"time": str(datetime.datetime.now()), "data": ws.positions()},
         )
 
+ 
         # print("instrument data", ws.get_instrument())
         # print(ws.funds())
         # print(ws.open_orders())

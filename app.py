@@ -6,7 +6,6 @@ from async_bitmex_ws import run_bitmex
 from multiprocessing import Process
 import asyncio
 
-psid = None
 
 app = Sanic()
 p = Process()
@@ -17,24 +16,6 @@ async def connect_socketio():
     if not sio.connected:
         await sio.connect("http://localhost:4000")
 
-
-# async def disconnect_socketio():
-#     await sio.disconnect()
-
-
-# loop = asyncio.get_event_loop()
-
-
-# loop = asyncio.get_event_loop()
-
-
-def run(sio):
-    # asyncio.gather(run_bitmex(),)
-    print(asyncio.get_event_loop().run_until_complete())
-    # loop = asyncio.new_event_loop()
-    # loop.run_until_complete(run_bitmex())
-    # loop.close()
-    # loop.close()
 
 
 @app.route("/", methods=["GET"])
