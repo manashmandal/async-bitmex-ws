@@ -66,7 +66,22 @@ apiSecret = "uIOiJzEhhHK5oiC3v1M6nYskIlFKAdtg_Jc966EUsO7TqQPy"
 # # asyncio.get_event_loop().run_until_complete(run_bitmex(None))
 from async_bitmexws import init_bitmex
 
-asyncio.get_event_loop().run_until_complete(
-    init_bitmex(None, apiKey=apiKey, secret=apiSecret, testnet=True)
-)
+
+async def run_task():
+    task = asyncio.create_task(
+        init_bitmex(None, apiKey=apiKey, secret=apiSecret, testnet=True)
+    )
+    print(task)
+
+    await task
+
+
+# asyncio.get_event_loop().run_until_complete(
+#     init_bitmex(None, apiKey=apiKey, secret=apiSecret, testnet=True)
+# )
+
+
+# print(task)
+
+asyncio.get_event_loop().run_until_complete(run_task())
 
