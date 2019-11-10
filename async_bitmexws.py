@@ -10,6 +10,28 @@ import math
 from loguru import logger
 import ccxt
 
+# Run the bitmex function to listen for data
+async def init_bitmex(socketio, apiKey, secret, testnet=True):
+    async def fetch_data(ws, socketio):
+        while ws.state() == State.OPEN:
+            await asyncio.sleep(0.1)
+
+            if socketio:
+                await socketio.emit(
+                    "positionEvent", {"data": ws.positions(), "time": time.time()}
+                )
+            else:
+                logger.debug({"data": ws.positions(), "time": time.time()})
+
+        await socketio.disconnect()
+        await ws.close()
+
+    ws = AsyncBitMEXWS(apiKey=apiKey, secret=secret, testnet=testnet)
+
+    await ws.connect()
+
+    await asyncio.gather(ws.receive_message(), fetch_data(ws, socketio))
+
 
 def find_by_keys(keys, table, matchData):
     for item in table:
@@ -23,7 +45,7 @@ def order_leaves_quantity(o):
     return o["leavesQty"] > 0
 
 
-class BitMEXWS:
+class AsyncBitMEXWS:
     def __init__(
         self,
         apiKey: str,
@@ -110,20 +132,9 @@ class BitMEXWS:
         )
 
     async def receive_message(self):
-        # while True:
-        #     await asyncio.sleep(3)
-        #     msg = await self.ws.recv()
-        #     # self.logger.debug(msg)
-        # await asyncio.sleep(1)
         async for message in self.ws:
-            # self.data = message
             await asyncio.sleep(0.1)
             self.__on_message(message)
-
-            # self.logger.debug(f"position {time.time()}")
-            # self.logger.debug(self.positions())
-        # print("message")
-        # await asyncio.sleep(1)
 
     async def connect(self):
         url, headers = self.get_url_auth()
