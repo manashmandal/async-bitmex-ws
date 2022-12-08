@@ -6,7 +6,7 @@ async-timeout==3.0.1
 attrs==19.3.0
 black==19.10b0
 ccxt==1.19.21
-certifi==2019.9.11
+certifi==2022.12.7
 cffi==1.13.2
 chardet==3.0.4
 Click==7.0
